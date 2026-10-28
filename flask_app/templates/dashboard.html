@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EV Dashboard | EV Market Insights</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⚡</span>
+    <span class="brand-name">EV Insights</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/dashboard" class="active">Dashboard</a></li>
+    <li><a href="/story">Story</a></li>
+    <li><a href="/analytics">Analytics</a></li>
+    <li><a href="/docs">Docs</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>📊 Interactive EV Dashboard</h1>
+    <p>Explore multi-dimensional EV market data through interactive Tableau visualizations</p>
+  </div>
+</div>
+
+<!-- KPI Strip -->
+<div class="kpi-strip" id="kpiStrip">
+  <div class="container">
+    <div class="kpi-row" id="kpiRow">
+      <div class="kpi-item">
+        <div class="kpi-val" id="kpi-models">—</div>
+        <div class="kpi-lbl">EV Models</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-val" id="kpi-brands">—</div>
+        <div class="kpi-lbl">Brands</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-val" id="kpi-sales">—</div>
+        <div class="kpi-lbl">Total Sales</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-val" id="kpi-rating">—</div>
+        <div class="kpi-lbl">Avg Rating</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-val" id="kpi-range">—</div>
+        <div class="kpi-lbl">Max Range (km)</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-val" id="kpi-co2">—</div>
+        <div class="kpi-lbl">CO₂ Saved/yr (kg)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tableau Dashboard Embed -->
+<section class="tableau-section">
+  <div class="container">
+    <div class="tableau-wrapper">
+      <div class="tableau-header">
+        <h2>Tableau Dashboard — EV Market Performance</h2>
+        <a href="https://public.tableau.com/app/profile/YOUR_PROFILE/viz/EVMarketPerformanceInsights/Dashboard"
+           target="_blank" class="btn btn-sm">Open in Tableau Public ↗</a>
+      </div>
+      <!-- Replace the src below with your actual Tableau Public embed URL -->
+      <div class="tableau-embed-container">
+        <div class='tableauPlaceholder' id='viz-dashboard' style='position:relative'>
+          <noscript>
+            <a href='#'>
+              <img alt='EV Market Dashboard'
+                   src='https://public.tableau.com/static/images/EV/EVMarketPerformanceInsights/Dashboard/1_rss.png'
+                   style='border: none' />
+            </a>
+          </noscript>
+          <object class='tableauViz' style='display:none;'>
+            <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
+            <param name='embed_code_version' value='3' />
+            <param name='site_root' value='' />
+            <param name='name' value='EVMarketPerformanceInsights/Dashboard' />
+            <param name='tabs' value='no' />
+            <param name='toolbar' value='yes' />
+            <param name='animate_transition' value='yes' />
+            <param name='display_static_image' value='yes' />
+            <param name='display_spinner' value='yes' />
+            <param name='display_overlay' value='yes' />
+            <param name='display_count' value='yes' />
+            <param name='language' value='en-US' />
+          </object>
+        </div>
+        <!-- Tableau API script (loaded once Tableau workbook is published) -->
+        <script type='text/javascript'
+          src='https://public.tableau.com/javascripts/api/viz_v1.js'></script>
+      </div>
+
+      <!-- Fallback: Charts built from our API when Tableau is not published yet -->
+      <div class="fallback-charts" id="fallbackCharts">
+        <p class="fallback-note">
+          📌 Live API charts below — replace with Tableau embed after publishing to Tableau Public.
+        </p>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>Sales by Brand</h3>
+            <canvas id="brandChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Market by Category</h3>
+            <canvas id="categoryChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Battery Technology Share</h3>
+            <canvas id="batteryChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h3>Manufacturing Country</h3>
+            <canvas id="countryChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand"><span class="brand-icon">⚡</span> EV Market Insights</div>
+      <div class="footer-note">Built with Tableau + Flask | Data Analytics Project 2026</div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

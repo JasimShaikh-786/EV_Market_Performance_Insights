@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics | EV Market Insights</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⚡</span>
+    <span class="brand-name">EV Insights</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/dashboard">Dashboard</a></li>
+    <li><a href="/story">Story</a></li>
+    <li><a href="/analytics" class="active">Analytics</a></li>
+    <li><a href="/docs">Docs</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>📈 Live Analytics</h1>
+    <p>Real-time data exploration with filtering and drill-down capabilities</p>
+  </div>
+</div>
+
+<section class="analytics-section">
+  <div class="container">
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Category</label>
+        <select id="filterCategory" onchange="applyFilters()">
+          <option value="">All Categories</option>
+          <option value="Sedan">Sedan</option>
+          <option value="SUV">SUV</option>
+          <option value="Hatchback">Hatchback</option>
+          <option value="Truck">Truck</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Search Brand</label>
+        <input type="text" id="filterBrand" placeholder="e.g. Tesla, BYD" oninput="applyFilters()" />
+      </div>
+      <div class="filter-group">
+        <label>&nbsp;</label>
+        <button class="btn btn-sm" onclick="clearFilters()">Clear Filters</button>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid-full">
+      <div class="chart-card-full">
+        <h3>Annual Sales by Brand (Top 12)</h3>
+        <canvas id="salesByBrand" height="120"></canvas>
+      </div>
+      <div class="chart-card-half">
+        <h3>Sales by Category</h3>
+        <canvas id="salesByCategory"></canvas>
+      </div>
+      <div class="chart-card-half">
+        <h3>Battery Technology Distribution</h3>
+        <canvas id="batteryDist"></canvas>
+      </div>
+      <div class="chart-card-half">
+        <h3>Manufacturing Country Share</h3>
+        <canvas id="countryShare"></canvas>
+      </div>
+      <div class="chart-card-half">
+        <h3>Avg Range by Category</h3>
+        <canvas id="rangeByCategory"></canvas>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-section">
+      <div class="table-header">
+        <h3>Vehicle Data Table</h3>
+        <span id="tableCount" class="table-count"></span>
+      </div>
+      <div class="table-responsive">
+        <table id="vehicleTable" class="data-table">
+          <thead>
+            <tr>
+              <th>Brand</th>
+              <th>Model</th>
+              <th>Category</th>
+              <th>Battery Tech</th>
+              <th>Range (km)</th>
+              <th>Price (USD)</th>
+              <th>Annual Sales</th>
+              <th>Market Share %</th>
+              <th>Rating</th>
+            </tr>
+          </thead>
+          <tbody id="vehicleTableBody">
+            <tr><td colspan="9" class="loading">Loading data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand"><span class="brand-icon">⚡</span> EV Market Insights</div>
+      <div class="footer-note">Built with Tableau + Flask | Data Analytics Project 2026</div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+</body>
+</html>

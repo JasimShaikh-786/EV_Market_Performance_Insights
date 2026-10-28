@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EV Market Performance & Insights</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="brand-icon">⚡</span>
+    <span class="brand-name">EV Insights</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/" class="active">Home</a></li>
+    <li><a href="/dashboard">Dashboard</a></li>
+    <li><a href="/story">Story</a></li>
+    <li><a href="/analytics">Analytics</a></li>
+    <li><a href="/docs">Docs</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Data Analytics with Tableau</div>
+    <h1 class="hero-title">Electric Vehicle<br><span class="highlight">Market Performance</span><br>&amp; Insights</h1>
+    <p class="hero-desc">
+      A comprehensive analysis of the global EV market — exploring sales trends,
+      battery technologies, manufacturer performance, and customer satisfaction
+      across 50+ vehicles from 20+ brands worldwide.
+    </p>
+    <div class="hero-cta">
+      <a href="/dashboard" class="btn btn-primary">View Dashboard</a>
+      <a href="/story" class="btn btn-secondary">Explore Story</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="metric-cards">
+      <div class="metric-card" id="mc-models">
+        <span class="metric-icon">🚗</span>
+        <div class="metric-value" data-target="50">0</div>
+        <div class="metric-label">EV Models</div>
+      </div>
+      <div class="metric-card" id="mc-brands">
+        <span class="metric-icon">🏭</span>
+        <div class="metric-value" data-target="22">0</div>
+        <div class="metric-label">Brands</div>
+      </div>
+      <div class="metric-card" id="mc-sales">
+        <span class="metric-icon">📈</span>
+        <div class="metric-value" data-target="3.8" data-suffix="M+">0</div>
+        <div class="metric-label">Annual Sales</div>
+      </div>
+      <div class="metric-card" id="mc-rating">
+        <span class="metric-icon">⭐</span>
+        <div class="metric-value" data-target="4.4" data-decimal="1">0</div>
+        <div class="metric-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECT EPICS OVERVIEW ── -->
+<section class="epics-section">
+  <div class="container">
+    <h2 class="section-title">Project Epics</h2>
+    <p class="section-sub">8 structured epics covering the full analytics lifecycle</p>
+    <div class="epics-grid">
+      <div class="epic-card">
+        <div class="epic-num">01</div>
+        <div class="epic-icon">🗄️</div>
+        <h3>Data Collection</h3>
+        <p>Dataset download, SQL DB setup, Tableau connection</p>
+      </div>
+      <div class="epic-card">
+        <div class="epic-num">02</div>
+        <div class="epic-icon">🧹</div>
+        <h3>Data Preparation</h3>
+        <p>Cleaning, transformation, feature engineering</p>
+      </div>
+      <div class="epic-card">
+        <div class="epic-num">03</div>
+        <div class="epic-icon">📊</div>
+        <h3>Visualizations</h3>
+        <p>7 unique chart types for comprehensive insights</p>
+      </div>
+      <div class="epic-card">
+        <div class="epic-num">04</div>
+        <div class="epic-icon">🎛️</div>
+        <h3>Dashboard</h3>
+        <p>Interactive, responsive multi-chart dashboard</p>
+      </div>
+      <div class="epic-card">
+        <div class="epic-num">05</div>
+        <div class="epic-icon">📖</div>
+        <h3>Story</h3>
+        <p>Narrative data story with multiple scenes</p>
+      </div>
+      <div class="epic-card">
+        <div class="epic-num">06</div>
+        <div class="epic-icon">⚙️</div>
+        <h3>Performance Testing</h3>
+        <p>Filters, calculated fields, optimization</p>
+      </div>
+      <div class="epic-card">
+        <div class="epic-num">07</div>
+        <div class="epic-icon">🌐</div>
+        <h3>Web Integration</h3>
+        <p>Tableau Public publish + Flask embed</p>
+      </div>
+      <div class="epic-card">
+        <div class="epic-num">08</div>
+        <div class="epic-icon">📄</div>
+        <h3>Documentation</h3>
+        <p>Step-by-step project development guide</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── KEY INSIGHTS PREVIEW ── -->
+<section class="insights-section">
+  <div class="container">
+    <h2 class="section-title">Key Market Insights</h2>
+    <div class="insights-grid">
+      <div class="insight-card insight-blue">
+        <h3>🏆 Market Leader</h3>
+        <p>Tesla Model Y dominates with <strong>24.3%</strong> market share and 604,000 annual sales</p>
+      </div>
+      <div class="insight-card insight-green">
+        <h3>🔋 Battery Trends</h3>
+        <p>NMC technology powers <strong>60%</strong> of models. LFP gains traction for affordability</p>
+      </div>
+      <div class="insight-card insight-purple">
+        <h3>🌍 Manufacturing Hubs</h3>
+        <p>China leads production volume. Germany excels in premium EVs with top customer ratings</p>
+      </div>
+      <div class="insight-card insight-orange">
+        <h3>🌱 CO₂ Impact</h3>
+        <p>Combined fleet saves over <strong>8.2 billion kg</strong> of CO₂ per year globally</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SCENARIOS ── -->
+<section class="scenarios-section">
+  <div class="container">
+    <h2 class="section-title">User Scenarios</h2>
+    <div class="scenarios-grid">
+      <div class="scenario-card">
+        <div class="scenario-avatar">👩‍💼</div>
+        <h3>Emily Johnson</h3>
+        <div class="scenario-role">EV Market Strategy Director</div>
+        <p>Analyzes vehicle category contributions, manufacturer rankings, and customer satisfaction for strategic planning.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="scenario-avatar">👨‍💻</div>
+        <h3>David Chen</h3>
+        <div class="scenario-role">Automotive BI Manager</div>
+        <p>Monitors market share, battery tech distribution, and geographic production trends for consulting insights.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="scenario-avatar">👩‍🔬</div>
+        <h3>Dr. Sarah Williams</h3>
+        <div class="scenario-role">Sustainable Mobility Analyst</div>
+        <p>Studies battery innovations, driving range improvements, and CO₂ impact for sustainable transport policies.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span class="brand-icon">⚡</span> EV Market Insights
+      </div>
+      <div class="footer-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/story">Story</a>
+        <a href="/analytics">Analytics</a>
+        <a href="/docs">Documentation</a>
+        <a href="https://github.com/YOUR_USERNAME/ev-market-insights" target="_blank">GitHub</a>
+      </div>
+      <div class="footer-note">
+        Built with Tableau + Flask &nbsp;|&nbsp; Data Analytics Project 2026
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
