@@ -12,9 +12,8 @@ venv/
 env/
 .env
 
-# Database
-*.db
-*.sqlite3
+# Database (ev_market.db is tracked for Vercel serverless deployment)
+# *.db
 
 # Jupyter
 .ipynb_checkpoints/

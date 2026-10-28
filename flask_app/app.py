@@ -1,16 +1,19 @@
 """
 Electric Vehicle Market Performance & Insights
 Flask Web Application — Embeds Tableau Dashboard + Story
+Production & Serverless Ready (Works Locally and on Vercel)
 """
 
 from flask import Flask, render_template, jsonify, request
 import sqlite3
+import csv
 import json
 import os
 
 BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR  = os.path.abspath(os.path.join(BASE_DIR, '..'))
 DB_PATH   = os.path.join(ROOT_DIR, 'data', 'ev_market.db')
+RAW_CSV   = os.path.join(ROOT_DIR, 'data', 'raw', 'ev_market_data.csv')
 DATA_DIR  = os.path.join(ROOT_DIR, 'data', 'processed')
 
 app = Flask(
@@ -19,25 +22,78 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, 'static')
 )
 
+_shared_mem_db = None
+
 
 # ────────────────────────────────────────────────
-# HELPERS
+# ROBUST DATABASE CONNECTION & ZERO-CRASH QUERIES
 # ────────────────────────────────────────────────
 
 def get_db_connection():
-    # Use read-only URI mode for serverless environments (Vercel)
-    try:
-        conn = sqlite3.connect(f"file:{os.path.abspath(DB_PATH)}?mode=ro", uri=True)
-    except Exception:
-        conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    global _shared_mem_db
+    if _shared_mem_db is not None:
+        return _shared_mem_db
+
+    # 1. Attempt connection to SQLite DB on disk
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(f"file:{os.path.abspath(DB_PATH)}?mode=ro", uri=True)
+            conn.row_factory = sqlite3.Row
+            conn.execute("SELECT 1 FROM ev_vehicles LIMIT 1")
+            return conn
+        except Exception:
+            try:
+                conn = sqlite3.connect(DB_PATH)
+                conn.row_factory = sqlite3.Row
+                conn.execute("SELECT 1 FROM ev_vehicles LIMIT 1")
+                return conn
+            except Exception:
+                pass
+
+    # 2. Build in-memory SQLite database from CSV (Fail-safe for Vercel Serverless)
+    mem_conn = sqlite3.connect(':memory:', check_same_thread=False)
+    mem_conn.row_factory = sqlite3.Row
+    mem_conn.execute('''CREATE TABLE IF NOT EXISTS ev_vehicles (
+        Vehicle_ID TEXT PRIMARY KEY,
+        Brand TEXT, Model TEXT, Category TEXT, Year INTEGER,
+        Battery_Tech TEXT, Battery_Capacity_kWh REAL, Driving_Range_km INTEGER,
+        Charging_Speed_kW INTEGER, Price_USD REAL, Annual_Sales INTEGER,
+        Market_Share_Percent REAL, Manufacturing_Country TEXT,
+        Customer_Rating REAL, Lifespan_Years INTEGER, CO2_Saved_kg_per_year INTEGER
+    )''')
+
+    if os.path.exists(RAW_CSV):
+        with open(RAW_CSV, mode='r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for r in reader:
+                mem_conn.execute('''INSERT OR REPLACE INTO ev_vehicles VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (
+                    r['Vehicle_ID'], r['Brand'], r['Model'], r['Category'], int(r['Year']),
+                    r['Battery_Tech'], float(r['Battery_Capacity_kWh']), int(r['Driving_Range_km']),
+                    int(r['Charging_Speed_kW']), float(r['Price_USD']), int(r['Annual_Sales']),
+                    float(r['Market_Share_Percent']), r['Manufacturing_Country'],
+                    float(r['Customer_Rating']), int(r['Lifespan_Years']), int(r['CO2_Saved_kg_per_year'])
+                ))
+        mem_conn.commit()
+
+    _shared_mem_db = mem_conn
+    return _shared_mem_db
+
+
+def query_db(sql, params=(), one=False):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute(sql, params)
+    rv = cur.fetchall()
+    cur.close()
+    if conn != _shared_mem_db:
+        conn.close()
+    return (rv[0] if rv else None) if one else rv
 
 
 def load_json_data(filename):
     path = os.path.join(DATA_DIR, filename)
     if os.path.exists(path):
-        with open(path) as f:
+        with open(path, encoding='utf-8') as f:
             return json.load(f)
     return {}
 
@@ -54,7 +110,7 @@ def index():
 
 @app.route('/dashboard')
 def dashboard():
-    """Tableau Dashboard embed page."""
+    """Executive Dashboard page."""
     return render_template('dashboard.html')
 
 
@@ -83,8 +139,7 @@ def docs():
 
 @app.route('/api/brands')
 def api_brands():
-    conn = get_db_connection()
-    rows = conn.execute("""
+    rows = query_db("""
         SELECT Brand,
                SUM(Annual_Sales)           AS Total_Sales,
                ROUND(AVG(Customer_Rating), 2) AS Avg_Rating,
@@ -93,15 +148,13 @@ def api_brands():
         FROM ev_vehicles
         GROUP BY Brand
         ORDER BY Total_Sales DESC
-    """).fetchall()
-    conn.close()
+    """)
     return jsonify([dict(r) for r in rows])
 
 
 @app.route('/api/categories')
 def api_categories():
-    conn = get_db_connection()
-    rows = conn.execute("""
+    rows = query_db("""
         SELECT Category,
                COUNT(*) AS Model_Count,
                SUM(Annual_Sales) AS Total_Sales,
@@ -111,15 +164,13 @@ def api_categories():
         FROM ev_vehicles
         GROUP BY Category
         ORDER BY Total_Sales DESC
-    """).fetchall()
-    conn.close()
+    """)
     return jsonify([dict(r) for r in rows])
 
 
 @app.route('/api/battery-tech')
 def api_battery_tech():
-    conn = get_db_connection()
-    rows = conn.execute("""
+    rows = query_db("""
         SELECT Battery_Tech,
                COUNT(*) AS Model_Count,
                SUM(Annual_Sales) AS Total_Sales,
@@ -129,15 +180,13 @@ def api_battery_tech():
         FROM ev_vehicles
         GROUP BY Battery_Tech
         ORDER BY Total_Sales DESC
-    """).fetchall()
-    conn.close()
+    """)
     return jsonify([dict(r) for r in rows])
 
 
 @app.route('/api/countries')
 def api_countries():
-    conn = get_db_connection()
-    rows = conn.execute("""
+    rows = query_db("""
         SELECT Manufacturing_Country,
                COUNT(*) AS Model_Count,
                SUM(Annual_Sales) AS Total_Sales,
@@ -145,31 +194,27 @@ def api_countries():
         FROM ev_vehicles
         GROUP BY Manufacturing_Country
         ORDER BY Total_Sales DESC
-    """).fetchall()
-    conn.close()
+    """)
     return jsonify([dict(r) for r in rows])
 
 
 @app.route('/api/top-models')
 def api_top_models():
     limit = request.args.get('limit', 10, type=int)
-    conn = get_db_connection()
-    rows = conn.execute(f"""
+    rows = query_db("""
         SELECT Brand, Model, Category, Annual_Sales,
                Customer_Rating, Driving_Range_km, Price_USD,
                Battery_Tech, Market_Share_Percent
         FROM ev_vehicles
         ORDER BY Annual_Sales DESC
-        LIMIT {limit}
-    """).fetchall()
-    conn.close()
+        LIMIT ?
+    """, (limit,))
     return jsonify([dict(r) for r in rows])
 
 
 @app.route('/api/kpis')
 def api_kpis():
-    conn = get_db_connection()
-    row = conn.execute("""
+    row = query_db("""
         SELECT
             COUNT(*) AS Total_Models,
             COUNT(DISTINCT Brand) AS Total_Brands,
@@ -179,9 +224,8 @@ def api_kpis():
             ROUND(AVG(Price_USD), 0) AS Avg_Price_USD,
             SUM(Annual_Sales * CO2_Saved_kg_per_year) AS Total_CO2_Saved_kg
         FROM ev_vehicles
-    """).fetchone()
-    conn.close()
-    return jsonify(dict(row))
+    """, one=True)
+    return jsonify(dict(row) if row else {})
 
 
 @app.route('/api/vehicles')
@@ -189,18 +233,16 @@ def api_vehicles():
     """Full dataset endpoint with optional filtering."""
     brand    = request.args.get('brand', '')
     category = request.args.get('category', '')
-    conn     = get_db_connection()
-    query    = "SELECT * FROM ev_vehicles WHERE 1=1"
-    params   = []
+    sql = "SELECT * FROM ev_vehicles WHERE 1=1"
+    params = []
     if brand:
-        query += " AND Brand LIKE ?"
+        sql += " AND Brand LIKE ?"
         params.append(f'%{brand}%')
     if category:
-        query += " AND Category = ?"
+        sql += " AND Category = ?"
         params.append(category)
-    query += " ORDER BY Annual_Sales DESC"
-    rows = conn.execute(query, params).fetchall()
-    conn.close()
+    sql += " ORDER BY Annual_Sales DESC"
+    rows = query_db(sql, params)
     return jsonify([dict(r) for r in rows])
 
 
