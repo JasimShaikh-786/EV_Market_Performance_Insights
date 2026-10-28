@@ -105,9 +105,8 @@ python -m pytest tests/ -v
 
 ## 🔗 Links
 
-- **Demo**: [http://localhost:5000](http://localhost:5000)
-- **Tableau Public**: [Add your Tableau Public link here]
-- **GitHub**: [Add your GitHub repo link here]
+- **Live Local Demo**: [http://localhost:5000](http://localhost:5000)
+- **GitHub Repository**: [https://github.com/JasimShaikh-786/EV_Market_Performance_Insights](https://github.com/JasimShaikh-786/EV_Market_Performance_Insights)
 
 ---
 
@@ -119,6 +118,7 @@ python -m pytest tests/ -v
 
 ## 👤 Author
 
-Built as part of the **SkillWallet — Data Analytics with Tableau** program.  
+**Jasim Shaikh** ([@JasimShaikh-786](https://github.com/JasimShaikh-786))  
+Program: **SkillWallet — Data Analytics with Tableau**  
 Project: **Electric Vehicle Market Performance & Insights**  
 Date: October 2026

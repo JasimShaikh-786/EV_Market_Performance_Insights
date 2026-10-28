@@ -1,5 +1,6 @@
 # EV Market Performance & Insights — Project Report
 
+**Author**: Jasim Shaikh ([@JasimShaikh-786](https://github.com/JasimShaikh-786))  
 **Project**: Electric Vehicle Market Performance & Insights  
 **Platform**: SkillWallet — Data Analytics with Tableau  
 **Date**: October 28, 2026  
@@ -111,13 +112,14 @@ This project delivers a comprehensive analysis of the global electric vehicle (E
 ## Web Integration
 
 ### Tableau Public
-- Dashboard published at: `[UPDATE AFTER PUBLISHING]`
-- Story published at: `[UPDATE AFTER PUBLISHING]`
+- Workbook source: `data/processed/ev_cleaned.csv` and `data/ev_market.db`
+- Embedded live with interactive Chart.js fallback views in Flask web app
 
 ### Flask Application
 - **Routes**: `/`, `/dashboard`, `/story`, `/analytics`, `/docs`
 - **API**: `/api/brands`, `/api/categories`, `/api/battery-tech`, `/api/countries`, `/api/top-models`, `/api/kpis`, `/api/vehicles`
 - **Demo URL**: http://localhost:5000
+- **GitHub Repository**: https://github.com/JasimShaikh-786/EV_Market_Performance_Insights
 
 ---
 
