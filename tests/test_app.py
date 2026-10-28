@@ -43,11 +43,6 @@ def test_analytics_loads(client):
     assert res.status_code == 200
 
 
-def test_docs_loads(client):
-    res = client.get('/docs')
-    assert res.status_code == 200
-
-
 # ── API endpoint tests ───────────────────────────────────────
 
 def test_api_brands_returns_json(client):

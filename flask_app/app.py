@@ -127,12 +127,6 @@ def analytics():
     return render_template('analytics.html', profile=profile)
 
 
-@app.route('/docs')
-def docs():
-    """Project documentation page."""
-    return render_template('docs.html')
-
-
 # ────────────────────────────────────────────────
 # API ENDPOINTS
 # ────────────────────────────────────────────────
