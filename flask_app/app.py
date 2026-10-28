@@ -8,11 +8,16 @@ import sqlite3
 import json
 import os
 
-app = Flask(__name__)
-
 BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
-DB_PATH   = os.path.join(BASE_DIR, '..', 'data', 'ev_market.db')
-DATA_DIR  = os.path.join(BASE_DIR, '..', 'data', 'processed')
+ROOT_DIR  = os.path.abspath(os.path.join(BASE_DIR, '..'))
+DB_PATH   = os.path.join(ROOT_DIR, 'data', 'ev_market.db')
+DATA_DIR  = os.path.join(ROOT_DIR, 'data', 'processed')
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+    static_folder=os.path.join(BASE_DIR, 'static')
+)
 
 
 # ────────────────────────────────────────────────
@@ -20,7 +25,11 @@ DATA_DIR  = os.path.join(BASE_DIR, '..', 'data', 'processed')
 # ────────────────────────────────────────────────
 
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
+    # Use read-only URI mode for serverless environments (Vercel)
+    try:
+        conn = sqlite3.connect(f"file:{os.path.abspath(DB_PATH)}?mode=ro", uri=True)
+    except Exception:
+        conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
