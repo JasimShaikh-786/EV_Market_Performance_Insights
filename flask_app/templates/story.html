@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EV Story | EV Market Insights</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -25,87 +26,198 @@
 
 <div class="page-header">
   <div class="container">
-    <h1>📖 Data Story</h1>
-    <p>A narrative journey through the EV market — from market leaders to sustainability impact</p>
+    <h1>📖 Global EV Market Story</h1>
+    <p>A 5-part data storytelling journey through the modern electric vehicle transformation</p>
   </div>
 </div>
 
-<!-- Story Scenes Navigation -->
+<!-- Story Scenes Step Navigation -->
 <section class="story-nav-section">
   <div class="container">
     <div class="story-scenes">
-      <button class="scene-btn active" data-scene="1">Scene 1<br><small>Market Overview</small></button>
-      <button class="scene-btn" data-scene="2">Scene 2<br><small>Brand Leaders</small></button>
-      <button class="scene-btn" data-scene="3">Scene 3<br><small>Battery Tech</small></button>
-      <button class="scene-btn" data-scene="4">Scene 4<br><small>Range & Price</small></button>
-      <button class="scene-btn" data-scene="5">Scene 5<br><small>Sustainability</small></button>
+      <button class="scene-btn active" data-scene="1" onclick="switchScene(1)">
+        <span class="scene-tag">Scene 01</span>
+        <strong>Market Overview</strong>
+        <small>The EV Revolution</small>
+      </button>
+      <button class="scene-btn" data-scene="2" onclick="switchScene(2)">
+        <span class="scene-tag">Scene 02</span>
+        <strong>Brand Leaders</strong>
+        <small>Market Hegemony</small>
+      </button>
+      <button class="scene-btn" data-scene="3" onclick="switchScene(3)">
+        <span class="scene-tag">Scene 03</span>
+        <strong>Battery Tech</strong>
+        <small>Chemistry Race</small>
+      </button>
+      <button class="scene-btn" data-scene="4" onclick="switchScene(4)">
+        <span class="scene-tag">Scene 04</span>
+        <strong>Range &amp; Price</strong>
+        <small>Value Frontier</small>
+      </button>
+      <button class="scene-btn" data-scene="5" onclick="switchScene(5)">
+        <span class="scene-tag">Scene 05</span>
+        <strong>Sustainability</strong>
+        <small>Decarbonization</small>
+      </button>
     </div>
   </div>
 </section>
 
-<!-- Tableau Story Embed -->
-<section class="tableau-section">
+<!-- Active Story Theater (Visualization + Narrative Side-by-Side) -->
+<section class="story-theater-section">
   <div class="container">
-    <div class="tableau-wrapper">
-      <div class="tableau-header">
-        <h2>Tableau Story — EV Market Narrative</h2>
-        <a href="https://public.tableau.com/app/profile/YOUR_PROFILE/viz/EVMarketPerformanceInsights/Story"
-           target="_blank" class="btn btn-sm">Open in Tableau Public ↗</a>
-      </div>
-      <div class="tableau-embed-container">
-        <div class='tableauPlaceholder' id='viz-story' style='position:relative'>
-          <noscript>
-            <a href='#'>
-              <img alt='EV Market Story' style='border: none' />
-            </a>
-          </noscript>
-          <object class='tableauViz' style='display:none;'>
-            <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
-            <param name='embed_code_version' value='3' />
-            <param name='name' value='EVMarketPerformanceInsights/Story' />
-            <param name='tabs' value='no' />
-            <param name='toolbar' value='yes' />
-            <param name='animate_transition' value='yes' />
-            <param name='display_static_image' value='yes' />
-            <param name='display_spinner' value='yes' />
-            <param name='language' value='en-US' />
-          </object>
+    <div class="story-stage">
+
+      <!-- Left Column: Dynamic Visual for the active scene -->
+      <div class="story-viz-panel">
+        <div class="viz-card-header">
+          <span class="viz-badge" id="sceneVizBadge">Scene 1 Analytics</span>
+          <h3 id="sceneVizTitle">Category Sales Volume Distribution</h3>
         </div>
-        <script type='text/javascript'
-          src='https://public.tableau.com/javascripts/api/viz_v1.js'></script>
+        <div class="story-chart-container">
+          <canvas id="storySceneChart"></canvas>
+        </div>
+        <div class="viz-caption" id="sceneVizCaption">
+          Analyzed across 50 vehicle models worldwide, showing volume leadership in SUVs and Sedans.
+        </div>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- Story Narrative Text -->
-<section class="story-narrative">
-  <div class="container">
-    <div class="scene-content active" id="scene-1">
-      <h2>🌍 Scene 1: The EV Revolution</h2>
-      <p>The global electric vehicle market has undergone remarkable transformation. From niche innovation to mainstream adoption, EVs now represent a substantial portion of new vehicle sales worldwide. Our dataset covers <strong>50 models from 22 brands</strong> across 8 countries, with combined annual sales exceeding <strong>3.8 million units</strong>.</p>
-      <div class="story-stats">
-        <div class="story-stat"><span>50</span> Models Analyzed</div>
-        <div class="story-stat"><span>22</span> Brands</div>
-        <div class="story-stat"><span>8</span> Manufacturing Countries</div>
-        <div class="story-stat"><span>3.8M+</span> Annual Sales</div>
+      <!-- Right Column: Narrative Context & Insights -->
+      <div class="story-narrative-panel">
+        <div class="scene-content active" id="scene-1">
+          <div class="scene-num">CHAPTER 01</div>
+          <h2>🌍 The Global EV Revolution</h2>
+          <p class="scene-lead">
+            The electric vehicle industry has reached an unprecedented inflection point, evolving rapidly from early technology adoption to mass commercial scale.
+          </p>
+          <p>
+            With over <strong>3.9 million units sold annually</strong> across the analyzed cohort, consumer preferences are overwhelmingly driven by versatility and range assurance. SUVs command the largest production volume, reflecting broader automotive lifestyle migration.
+          </p>
+          <div class="story-stat-boxes">
+            <div class="story-stat-box">
+              <span class="stat-number">50</span>
+              <span class="stat-desc">EV Models</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">24</span>
+              <span class="stat-desc">OEM Brands</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">3.9M+</span>
+              <span class="stat-desc">Annual Units</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-content" id="scene-2">
+          <div class="scene-num">CHAPTER 02</div>
+          <h2>🏆 The Brand Dominance Matrix</h2>
+          <p class="scene-lead">
+            Market leadership is concentrated among pioneers who scaled battery procurement and vertical integration early.
+          </p>
+          <p>
+            <strong>Tesla's Model Y</strong> represents the single best-selling electric vehicle globally with <strong>24.3% market share</strong> (604,000 units), closely matched by the Model 3. Meanwhile, <strong>BYD</strong> commands massive volume in Asia through affordable LFP technology with hits like the Atto 3 and Dolphin.
+          </p>
+          <div class="story-stat-boxes">
+            <div class="story-stat-box">
+              <span class="stat-number">24.3%</span>
+              <span class="stat-desc">Top Model Share</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">1.1M+</span>
+              <span class="stat-desc">Tesla Annual Total</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">840K+</span>
+              <span class="stat-desc">BYD Fleet Units</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-content" id="scene-3">
+          <div class="scene-num">CHAPTER 03</div>
+          <h2>🔋 The Battery Chemistry Race</h2>
+          <p class="scene-lead">
+            Battery chemistry determines the holy trinity of electric mobility: range, cost, and lifecycle safety.
+          </p>
+          <p>
+            <strong>NMC (Nickel Manganese Cobalt)</strong> remains the industry workhorse powering 60% of models due to balanced energy density. <strong>LFP (Lithium Iron Phosphate)</strong> is winning cost-sensitive markets with thermal resilience, while <strong>Solid-State</strong> (e.g., NIO ET5) sets new range records crossing <strong>1,000 km</strong> on a single charge.
+          </p>
+          <div class="story-stat-boxes">
+            <div class="story-stat-box">
+              <span class="stat-number">60%</span>
+              <span class="stat-desc">NMC Share</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">1,000 km</span>
+              <span class="stat-desc">Solid-State Peak</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">10 Yrs</span>
+              <span class="stat-desc">Avg Pack Life</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-content" id="scene-4">
+          <div class="scene-num">CHAPTER 04</div>
+          <h2>📐 The Range vs. Price Value Frontier</h2>
+          <p class="scene-lead">
+            Consumers no longer need to pay six figures to achieve cross-country driving confidence.
+          </p>
+          <p>
+            While ultra-luxury models like the Mercedes EQS (857 km) and Lucid Air (837 km) push extreme engineering, value champions like the BYD Seal (700 km @ $42,000) offer unprecedented <strong>Value Scores (km per $1,000 spent)</strong>, democratizing long-distance travel.
+          </p>
+          <div class="story-stat-boxes">
+            <div class="story-stat-box">
+              <span class="stat-number">$50.8K</span>
+              <span class="stat-desc">Avg EV Price</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">552 km</span>
+              <span class="stat-desc">Average Range</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">16.6</span>
+              <span class="stat-desc">Seal Value Ratio</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-content" id="scene-5">
+          <div class="scene-num">CHAPTER 05</div>
+          <h2>🌱 Planetary Decarbonization Impact</h2>
+          <p class="scene-lead">
+            Every kilometer driven electrically removes combustion emissions from local communities and the atmosphere.
+          </p>
+          <p>
+            The analyzed fleet collectively eliminates over <strong>8.26 billion kilograms of CO₂ annually</strong> compared to equivalent internal combustion vehicles. As national electrical grids continue to transition toward renewables, the lifecycle carbon savings compound exponentially.
+          </p>
+          <div class="story-stat-boxes">
+            <div class="story-stat-box">
+              <span class="stat-number">8.26B</span>
+              <span class="stat-desc">kg CO₂ Saved/Yr</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">2,114 kg</span>
+              <span class="stat-desc">Avg/Vehicle/Yr</span>
+            </div>
+            <div class="story-stat-box">
+              <span class="stat-number">100%</span>
+              <span class="stat-desc">Tailpipe Free</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Stepper Buttons -->
+        <div class="story-stepper-nav">
+          <button class="btn btn-secondary btn-sm" id="prevSceneBtn" onclick="stepScene(-1)">← Previous Scene</button>
+          <button class="btn btn-primary btn-sm" id="nextSceneBtn" onclick="stepScene(1)">Next Scene →</button>
+        </div>
+
       </div>
-    </div>
-    <div class="scene-content" id="scene-2">
-      <h2>🏆 Scene 2: Brand Dominance</h2>
-      <p>Tesla continues to lead the global EV market, with the Model Y accounting for <strong>24.3%</strong> market share alone. BYD has emerged as the strongest challenger, particularly in Asian markets, with multiple high-volume models including the Atto 3, Dolphin, and Song Plus. The competitive landscape shows clear regional patterns — American brands dominate premium segments, Chinese manufacturers lead in volume, and European brands focus on quality and range.</p>
-    </div>
-    <div class="scene-content" id="scene-3">
-      <h2>🔋 Scene 3: The Battery Technology Race</h2>
-      <p>NMC (Nickel Manganese Cobalt) batteries power the majority of EVs analyzed, offering a strong balance of range, performance, and charging speed. LFP (Lithium Iron Phosphate) technology — championed by BYD — is gaining ground for its safety, longevity, and cost advantages. Solid-State batteries, exemplified by NIO's ET5 achieving <strong>1000km range</strong>, signal the future direction of the industry. NCA chemistry remains Tesla's premium choice for maximum energy density.</p>
-    </div>
-    <div class="scene-content" id="scene-4">
-      <h2>📐 Scene 4: Range vs Price Equation</h2>
-      <p>The correlation between price and range is nuanced. The Mercedes EQS achieves an exceptional <strong>857km range</strong> at premium pricing. However, value champions like BYD Seal deliver <strong>700km range</strong> at mid-market pricing. The SUV category dominates sales volume despite shorter average ranges than sedans. Budget-segment buyers face trade-offs between range and affordability, though the gap is narrowing as battery costs decline.</p>
-    </div>
-    <div class="scene-content" id="scene-5">
-      <h2>🌱 Scene 5: Sustainability Impact</h2>
-      <p>The collective environmental impact of analyzed EV models is staggering. Combined CO₂ savings exceed <strong>8.2 billion kilograms per year</strong>. SUVs — despite being the largest category — contribute the most total CO₂ reduction due to their sales volume dominance. The shift toward LFP batteries further improves the lifecycle environmental profile. This data confirms that EVs are not just a commercial opportunity but a critical lever for global carbon reduction goals.</p>
+
     </div>
   </div>
 </section>
@@ -114,23 +226,13 @@
   <div class="container">
     <div class="footer-content">
       <div class="footer-brand"><span class="brand-icon">⚡</span> EV Market Insights</div>
-      <div class="footer-note">Built with Tableau + Flask | Data Analytics Project 2026</div>
+      <div class="footer-note">Built with Tableau &amp; Flask | Data Analytics with Tableau Program 2026</div>
     </div>
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script>
-  // Scene navigation
-  document.querySelectorAll('.scene-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const scene = btn.dataset.scene;
-      document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.scene-content').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(`scene-${scene}`).classList.add('active');
-    });
-  });
-</script>
+<script src="{{ url_for('static', filename='js/story.js') }}"></script>
 </body>
 </html>

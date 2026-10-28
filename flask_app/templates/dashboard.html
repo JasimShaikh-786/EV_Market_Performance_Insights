@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EV Dashboard | EV Market Insights</title>
+  <title>EV Executive Dashboard | EV Market Insights</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -25,8 +26,8 @@
 
 <div class="page-header">
   <div class="container">
-    <h1>📊 Interactive EV Dashboard</h1>
-    <p>Explore multi-dimensional EV market data through interactive Tableau visualizations</p>
+    <h1>📊 EV Market Performance Dashboard</h1>
+    <p>Comprehensive executive analytics covering global sales, battery tech, pricing, and sustainability metrics</p>
   </div>
 </div>
 
@@ -35,105 +36,171 @@
   <div class="container">
     <div class="kpi-row" id="kpiRow">
       <div class="kpi-item">
-        <div class="kpi-val" id="kpi-models">—</div>
+        <div class="kpi-val" id="kpi-models">50</div>
         <div class="kpi-lbl">EV Models</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-val" id="kpi-brands">—</div>
-        <div class="kpi-lbl">Brands</div>
+        <div class="kpi-val" id="kpi-brands">24</div>
+        <div class="kpi-lbl">Manufacturers</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-val" id="kpi-sales">—</div>
-        <div class="kpi-lbl">Total Sales</div>
+        <div class="kpi-val" id="kpi-sales">3.9M</div>
+        <div class="kpi-lbl">Total Annual Sales</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-val" id="kpi-rating">—</div>
-        <div class="kpi-lbl">Avg Rating</div>
+        <div class="kpi-val" id="kpi-rating">4.46 ⭐</div>
+        <div class="kpi-lbl">Avg Fleet Rating</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-val" id="kpi-range">—</div>
-        <div class="kpi-lbl">Max Range (km)</div>
+        <div class="kpi-val" id="kpi-range">1,315 km</div>
+        <div class="kpi-lbl">Max Driving Range</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-val" id="kpi-co2">—</div>
-        <div class="kpi-lbl">CO₂ Saved/yr (kg)</div>
+        <div class="kpi-val" id="kpi-co2">8.26B kg</div>
+        <div class="kpi-lbl">Annual CO₂ Offset</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Tableau Dashboard Embed -->
+<!-- Dashboard Content Section -->
 <section class="tableau-section">
   <div class="container">
-    <div class="tableau-wrapper">
-      <div class="tableau-header">
-        <h2>Tableau Dashboard — EV Market Performance</h2>
-        <a href="https://public.tableau.com/app/profile/YOUR_PROFILE/viz/EVMarketPerformanceInsights/Dashboard"
-           target="_blank" class="btn btn-sm">Open in Tableau Public ↗</a>
-      </div>
-      <!-- Replace the src below with your actual Tableau Public embed URL -->
-      <div class="tableau-embed-container">
-        <div class='tableauPlaceholder' id='viz-dashboard' style='position:relative'>
-          <noscript>
-            <a href='#'>
-              <img alt='EV Market Dashboard'
-                   src='https://public.tableau.com/static/images/EV/EVMarketPerformanceInsights/Dashboard/1_rss.png'
-                   style='border: none' />
-            </a>
-          </noscript>
-          <object class='tableauViz' style='display:none;'>
-            <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
-            <param name='embed_code_version' value='3' />
-            <param name='site_root' value='' />
-            <param name='name' value='EVMarketPerformanceInsights/Dashboard' />
-            <param name='tabs' value='no' />
-            <param name='toolbar' value='yes' />
-            <param name='animate_transition' value='yes' />
-            <param name='display_static_image' value='yes' />
-            <param name='display_spinner' value='yes' />
-            <param name='display_overlay' value='yes' />
-            <param name='display_count' value='yes' />
-            <param name='language' value='en-US' />
-          </object>
+
+    <!-- Interactive Filter & Tableau Sync Bar -->
+    <div class="dashboard-controls-bar">
+      <div class="controls-left">
+        <div class="control-item">
+          <label>Filter Category:</label>
+          <select id="dashCategoryFilter" onchange="filterDashboardData()">
+            <option value="ALL">All Categories</option>
+            <option value="SUV">SUV</option>
+            <option value="Sedan">Sedan</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="Truck">Truck</option>
+          </select>
         </div>
-        <!-- Tableau API script (loaded once Tableau workbook is published) -->
-        <script type='text/javascript'
-          src='https://public.tableau.com/javascripts/api/viz_v1.js'></script>
+        <div class="control-item">
+          <label>Battery Chemistry:</label>
+          <select id="dashBatteryFilter" onchange="filterDashboardData()">
+            <option value="ALL">All Chemistries</option>
+            <option value="NMC">NMC</option>
+            <option value="LFP">LFP</option>
+            <option value="NCA">NCA</option>
+            <option value="Solid-State">Solid-State</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Fallback: Charts built from our API when Tableau is not published yet -->
-      <div class="fallback-charts" id="fallbackCharts">
-        <p class="fallback-note">
-          📌 Live API charts below — replace with Tableau embed after publishing to Tableau Public.
-        </p>
-        <div class="charts-grid">
-          <div class="chart-card">
-            <h3>Sales by Brand</h3>
-            <canvas id="brandChart"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3>Market by Category</h3>
-            <canvas id="categoryChart"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3>Battery Technology Share</h3>
-            <canvas id="batteryChart"></canvas>
-          </div>
-          <div class="chart-card">
-            <h3>Manufacturing Country</h3>
-            <canvas id="countryChart"></canvas>
-          </div>
+      <div class="controls-right">
+        <button class="btn btn-secondary btn-sm" onclick="toggleTableauPublicModal()">
+          🔗 Connect Tableau Public Embed
+        </button>
+      </div>
+    </div>
+
+    <!-- Optional Tableau Public Container (only shown if user connects a published URL) -->
+    <div id="tableauPublicWrapper" style="display: none; margin-bottom: 24px;">
+      <div class="tableau-wrapper">
+        <div class="tableau-header">
+          <h2>Tableau Public Live Viz</h2>
+          <button class="btn btn-sm" onclick="closeTableauEmbed()">Switch to Native Dashboard</button>
+        </div>
+        <div class="tableau-embed-container" id="tableauEmbedSlot">
+          <!-- Injected dynamically when valid URL is entered -->
         </div>
       </div>
     </div>
+
+    <!-- 7 Unique Visualizations Grid -->
+    <div class="dash-grid-7" id="nativeDashboardGrid">
+      
+      <!-- Chart 1: Annual Sales by Top Brands -->
+      <div class="chart-card dash-card-span-2">
+        <div class="chart-header">
+          <h3>🏆 1. Annual Sales Volume by Top Manufacturers</h3>
+          <span class="chart-tag">Market Share Dominance</span>
+        </div>
+        <canvas id="dashBrandSales" height="110"></canvas>
+      </div>
+
+      <!-- Chart 2: Category Volume Distribution -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>🚙 2. Category Share</h3>
+          <span class="chart-tag">SUV vs Sedan vs Hatch</span>
+        </div>
+        <canvas id="dashCategoryDist" height="180"></canvas>
+      </div>
+
+      <!-- Chart 3: Battery Chemistry Market Mix -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>🔋 3. Battery Chemistry Mix</h3>
+          <span class="chart-tag">NMC vs LFP vs NCA</span>
+        </div>
+        <canvas id="dashBatteryDist" height="180"></canvas>
+      </div>
+
+      <!-- Chart 4: Price vs Driving Range -->
+      <div class="chart-card dash-card-span-2">
+        <div class="chart-header">
+          <h3>📈 4. Price (USD) vs. Driving Range (km) Efficiency</h3>
+          <span class="chart-tag">Range Value Frontier</span>
+        </div>
+        <canvas id="dashPriceRange" height="110"></canvas>
+      </div>
+
+      <!-- Chart 5: Geographic Manufacturing Distribution -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>🌍 5. Global Production Hubs</h3>
+          <span class="chart-tag">Volume by Nation</span>
+        </div>
+        <canvas id="dashCountryOutput" height="160"></canvas>
+      </div>
+
+      <!-- Chart 6: Category Driving Range Benchmark -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>⚡ 6. Average Driving Range (km)</h3>
+          <span class="chart-tag">Performance Benchmark</span>
+        </div>
+        <canvas id="dashRangeByCategory" height="160"></canvas>
+      </div>
+
+      <!-- Chart 7: Customer Rating & Satisfaction -->
+      <div class="chart-card dash-card-span-2">
+        <div class="chart-header">
+          <h3>⭐ 7. Customer Satisfaction & Rating Distribution</h3>
+          <span class="chart-tag">Executive Perception Index</span>
+        </div>
+        <canvas id="dashCustomerRating" height="110"></canvas>
+      </div>
+
+    </div>
+
   </div>
 </section>
+
+<!-- Tableau URL Input Modal -->
+<div id="tableauModal" class="modal-overlay" style="display: none;">
+  <div class="modal-card">
+    <h3>🔗 Embed Your Tableau Public Dashboard</h3>
+    <p>If you published your workbook to Tableau Public, paste your public view URL below to embed it directly:</p>
+    <input type="text" id="tableauUrlInput" placeholder="https://public.tableau.com/views/YourWorkbook/YourView" class="modal-input" />
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-sm" onclick="saveTableauUrl()">Load Tableau Embed</button>
+      <button class="btn btn-secondary btn-sm" onclick="toggleTableauPublicModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <footer class="footer">
   <div class="container">
     <div class="footer-content">
       <div class="footer-brand"><span class="brand-icon">⚡</span> EV Market Insights</div>
-      <div class="footer-note">Built with Tableau + Flask | Data Analytics Project 2026</div>
+      <div class="footer-note">Built with Tableau &amp; Flask | Data Analytics with Tableau Program 2026</div>
     </div>
   </div>
 </footer>
