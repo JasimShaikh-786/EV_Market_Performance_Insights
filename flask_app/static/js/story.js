@@ -123,7 +123,19 @@ const SCENE_CONFIGS = {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+async function ensureChartJs() {
+  if (typeof Chart !== 'undefined') return true;
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await ensureChartJs();
   renderSceneVisual(1);
 });
 

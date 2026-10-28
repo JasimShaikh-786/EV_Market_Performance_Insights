@@ -8,22 +8,41 @@ const BRAND_PALETTE = [
   '#1d4ed8', '#1e40af', '#1e3a8a'
 ];
 
-const CAT_COLORS = {
-  'SUV': '#2563eb',
-  'Sedan': '#7c3aed',
-  'Hatchback': '#16a34a',
-  'Truck': '#ea580c'
-};
+function getCatColor(cat) {
+  const key = (cat || '').toUpperCase();
+  const map = {
+    'SUV': '#2563eb',
+    'SEDAN': '#7c3aed',
+    'HATCHBACK': '#16a34a',
+    'TRUCK': '#ea580c'
+  };
+  return map[key] || '#3b82f6';
+}
 
-const BATTERY_COLORS = {
-  'NMC': '#2563eb',
-  'LFP': '#16a34a',
-  'NCA': '#7c3aed',
-  'Solid-State': '#ea580c'
-};
+function getBatteryColor(bat) {
+  const key = (bat || '').toUpperCase();
+  const map = {
+    'NMC': '#2563eb',
+    'LFP': '#16a34a',
+    'NCA': '#7c3aed',
+    'SOLID-STATE': '#ea580c'
+  };
+  return map[key] || '#10b981';
+}
 
 let rawVehicles = [];
 let chartInstances = {};
+
+async function ensureChartJs() {
+  if (typeof Chart !== 'undefined') return true;
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initDashboard);
@@ -32,6 +51,7 @@ if (document.readyState === 'loading') {
 }
 
 async function initDashboard() {
+  await ensureChartJs();
   await loadDashboardData();
 }
 
@@ -104,8 +124,6 @@ function renderAllDashboardCharts(data) {
     }
   });
 }
-  renderCustomerRatings(data);
-}
 
 // 1. Annual Sales Volume by Top Manufacturers
 function renderBrandSales(data) {
@@ -154,7 +172,7 @@ function renderCategoryShare(data) {
   });
   const labels = Object.keys(catMap);
   const values = Object.values(catMap);
-  const colors = labels.map(c => CAT_COLORS[c] || '#64748b');
+  const colors = labels.map(c => getCatColor(c));
 
   createChart('dashCategoryDist', 'doughnut', {
     labels: labels,
@@ -189,7 +207,7 @@ function renderBatteryChemistry(data) {
   });
   const labels = Object.keys(batMap);
   const values = Object.values(batMap);
-  const colors = labels.map(b => BATTERY_COLORS[b] || '#64748b');
+  const colors = labels.map(b => getBatteryColor(b));
 
   createChart('dashBatteryDist', 'pie', {
     labels: labels,
@@ -228,7 +246,7 @@ function renderPriceVsRange(data) {
         model: `${v.Brand} ${v.Model}`,
         battery: v.Battery_Tech
       })),
-      backgroundColor: CAT_COLORS[cat] || '#2563eb',
+      backgroundColor: getCatColor(cat),
       pointRadius: 5,
       pointHoverRadius: 7
     };

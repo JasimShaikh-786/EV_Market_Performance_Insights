@@ -11,6 +11,17 @@ const COLORS = [
 let allVehicles = [];
 let chartInstances = {};
 
+async function ensureChartJs() {
+  if (typeof Chart !== 'undefined') return true;
+  return new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', loadAllData);
 } else {
@@ -19,6 +30,7 @@ if (document.readyState === 'loading') {
 
 async function loadAllData() {
   try {
+    await ensureChartJs();
     const [vehicles, brands, cats, battery, countries] = await Promise.all([
       fetch('/api/vehicles').then(r => r.json()),
       fetch('/api/brands').then(r => r.json()),
