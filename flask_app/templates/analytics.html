@@ -59,23 +59,33 @@
     <div class="charts-grid-full">
       <div class="chart-card-full">
         <h3>Annual Sales by Brand (Top 12)</h3>
-        <canvas id="salesByBrand" height="120"></canvas>
+        <div class="chart-canvas-wrapper tall">
+          <canvas id="salesByBrand"></canvas>
+        </div>
       </div>
       <div class="chart-card-half">
         <h3>Sales by Category</h3>
-        <canvas id="salesByCategory"></canvas>
+        <div class="chart-canvas-wrapper standard">
+          <canvas id="salesByCategory"></canvas>
+        </div>
       </div>
       <div class="chart-card-half">
         <h3>Battery Technology Distribution</h3>
-        <canvas id="batteryDist"></canvas>
+        <div class="chart-canvas-wrapper standard">
+          <canvas id="batteryDist"></canvas>
+        </div>
       </div>
       <div class="chart-card-half">
         <h3>Manufacturing Country Share</h3>
-        <canvas id="countryShare"></canvas>
+        <div class="chart-canvas-wrapper standard">
+          <canvas id="countryShare"></canvas>
+        </div>
       </div>
       <div class="chart-card-half">
         <h3>Avg Range by Category</h3>
-        <canvas id="rangeByCategory"></canvas>
+        <div class="chart-canvas-wrapper standard">
+          <canvas id="rangeByCategory"></canvas>
+        </div>
       </div>
     </div>
 
@@ -119,7 +129,12 @@
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+<script>
+  if (typeof Chart === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><\/script>');
+  }
+</script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
 </body>

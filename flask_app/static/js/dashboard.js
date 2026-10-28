@@ -25,14 +25,25 @@ const BATTERY_COLORS = {
 let rawVehicles = [];
 let chartInstances = {};
 
-document.addEventListener('DOMContentLoaded', async () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+  initDashboard();
+}
+
+async function initDashboard() {
   await loadDashboardData();
-});
+}
 
 async function loadDashboardData() {
   try {
     const res = await fetch('/api/vehicles');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     rawVehicles = await res.json();
+    if (!Array.isArray(rawVehicles) || rawVehicles.length === 0) {
+      console.warn('No vehicles returned from API');
+      return;
+    }
     renderAllDashboardCharts(rawVehicles);
   } catch (err) {
     console.error('Error fetching dashboard dataset:', err);
@@ -40,14 +51,18 @@ async function loadDashboardData() {
 }
 
 function filterDashboardData() {
-  const cat = document.getElementById('dashCategoryFilter').value;
-  const bat = document.getElementById('dashBatteryFilter').value;
-  const country = document.getElementById('dashCountryFilter').value;
+  const catEl = document.getElementById('dashCategoryFilter');
+  const batEl = document.getElementById('dashBatteryFilter');
+  const countryEl = document.getElementById('dashCountryFilter');
+
+  const cat = catEl ? catEl.value : 'ALL';
+  const bat = batEl ? batEl.value : 'ALL';
+  const country = countryEl ? countryEl.value : 'ALL';
 
   const filtered = rawVehicles.filter(v => {
-    const matchCat = cat === 'ALL' || v.Category.toLowerCase() === cat.toLowerCase();
-    const matchBat = bat === 'ALL' || v.Battery_Tech.toLowerCase() === bat.toLowerCase();
-    const matchCountry = country === 'ALL' || v.Manufacturing_Country.toLowerCase() === country.toLowerCase();
+    const matchCat = cat === 'ALL' || (v.Category && v.Category.toLowerCase() === cat.toLowerCase());
+    const matchBat = bat === 'ALL' || (v.Battery_Tech && v.Battery_Tech.toLowerCase() === bat.toLowerCase());
+    const matchCountry = country === 'ALL' || (v.Manufacturing_Country && v.Manufacturing_Country.toLowerCase() === country.toLowerCase());
     return matchCat && matchBat && matchCountry;
   });
 
@@ -60,19 +75,35 @@ function filterDashboardData() {
 }
 
 function resetAllFilters() {
-  document.getElementById('dashCategoryFilter').value = 'ALL';
-  document.getElementById('dashBatteryFilter').value = 'ALL';
-  document.getElementById('dashCountryFilter').value = 'ALL';
+  const catEl = document.getElementById('dashCategoryFilter');
+  const batEl = document.getElementById('dashBatteryFilter');
+  const countryEl = document.getElementById('dashCountryFilter');
+  if (catEl) catEl.value = 'ALL';
+  if (batEl) batEl.value = 'ALL';
+  if (countryEl) countryEl.value = 'ALL';
   filterDashboardData();
 }
 
 function renderAllDashboardCharts(data) {
-  renderBrandSales(data);
-  renderCategoryShare(data);
-  renderBatteryChemistry(data);
-  renderPriceVsRange(data);
-  renderCountryOutput(data);
-  renderRangeBenchmark(data);
+  if (!data || !data.length) return;
+  const charts = [
+    ['dashBrandSales', () => renderBrandSales(data)],
+    ['dashCategoryDist', () => renderCategoryShare(data)],
+    ['dashBatteryDist', () => renderBatteryChemistry(data)],
+    ['dashPriceRange', () => renderPriceVsRange(data)],
+    ['dashCountryOutput', () => renderCountryOutput(data)],
+    ['dashRangeByCategory', () => renderRangeBenchmark(data)],
+    ['dashCustomerRating', () => renderCustomerRatings(data)]
+  ];
+
+  charts.forEach(([id, fn]) => {
+    try {
+      fn();
+    } catch (err) {
+      console.error(`Chart render failed for ${id}:`, err);
+    }
+  });
+}
   renderCustomerRatings(data);
 }
 

@@ -11,10 +11,11 @@ const COLORS = [
 let allVehicles = [];
 let chartInstances = {};
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadAllData();
-});
-
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadAllData);
+} else {
+  loadAllData();
+}
 
 async function loadAllData() {
   try {
@@ -28,15 +29,18 @@ async function loadAllData() {
 
     allVehicles = vehicles;
     renderTable(vehicles);
-    renderSalesByBrand(brands.slice(0, 12));
-    renderSalesByCategory(cats);
-    renderBatteryDist(battery);
-    renderCountryShare(countries);
-    renderRangeByCategory(cats);
+
+    try { renderSalesByBrand(brands.slice(0, 12)); } catch(e) { console.error('salesByBrand err', e); }
+    try { renderSalesByCategory(cats); } catch(e) { console.error('salesByCategory err', e); }
+    try { renderBatteryDist(battery); } catch(e) { console.error('batteryDist err', e); }
+    try { renderCountryShare(countries); } catch(e) { console.error('countryShare err', e); }
+    try { renderRangeByCategory(cats); } catch(e) { console.error('rangeByCategory err', e); }
   } catch(e) {
-    console.warn('Analytics: DB may not be initialized yet —', e.message);
-    document.getElementById('vehicleTableBody').innerHTML =
-      '<tr><td colspan="9" class="loading">Run data_preparation.py first to initialize the database.</td></tr>';
+    console.warn('Analytics: Failed to fetch API data —', e.message);
+    const tbody = document.getElementById('vehicleTableBody');
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="9" class="loading">Failed to load data from server. Please refresh.</td></tr>';
+    }
   }
 }
 
@@ -102,7 +106,12 @@ function makeChart(id, type, labels, datasets, options = {}) {
   chartInstances[id] = new Chart(el, {
     type,
     data: { labels, datasets },
-    options: { responsive: true, ...options }
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      ...options
+    }
   });
 }
 
