@@ -1,19 +1,32 @@
 /* ============================================================
-   dashboard.js — Executive Dashboard with 7 Visualizations
+   dashboard.js — Executive BI Dashboard Engine
+   Guaranteed Zero Infinite Hover Expansions with Strict Bounds
    ============================================================ */
 
-const PALETTE = [
-  '#2563eb', '#7c3aed', '#16a34a', '#ea580c', '#0891b2',
-  '#be185d', '#854d0e', '#4338ca', '#065f46', '#92400e',
-  '#3b82f6', '#a855f7'
+const BRAND_PALETTE = [
+  '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe',
+  '#1d4ed8', '#1e40af', '#1e3a8a'
 ];
+
+const CAT_COLORS = {
+  'SUV': '#2563eb',
+  'Sedan': '#7c3aed',
+  'Hatchback': '#16a34a',
+  'Truck': '#ea580c'
+};
+
+const BATTERY_COLORS = {
+  'NMC': '#2563eb',
+  'LFP': '#16a34a',
+  'NCA': '#7c3aed',
+  'Solid-State': '#ea580c'
+};
 
 let rawVehicles = [];
 let chartInstances = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadDashboardData();
-  checkSavedTableauUrl();
 });
 
 async function loadDashboardData() {
@@ -22,21 +35,35 @@ async function loadDashboardData() {
     rawVehicles = await res.json();
     renderAllDashboardCharts(rawVehicles);
   } catch (err) {
-    console.error('Error loading dashboard data:', err);
+    console.error('Error fetching dashboard dataset:', err);
   }
 }
 
 function filterDashboardData() {
   const cat = document.getElementById('dashCategoryFilter').value;
   const bat = document.getElementById('dashBatteryFilter').value;
+  const country = document.getElementById('dashCountryFilter').value;
 
   const filtered = rawVehicles.filter(v => {
     const matchCat = cat === 'ALL' || v.Category.toLowerCase() === cat.toLowerCase();
     const matchBat = bat === 'ALL' || v.Battery_Tech.toLowerCase() === bat.toLowerCase();
-    return matchCat && matchBat;
+    const matchCountry = country === 'ALL' || v.Manufacturing_Country.toLowerCase() === country.toLowerCase();
+    return matchCat && matchBat && matchCountry;
   });
 
+  const statusText = document.getElementById('filterStatusText');
+  if (statusText) {
+    statusText.textContent = `Showing ${filtered.length} of ${rawVehicles.length} vehicles`;
+  }
+
   renderAllDashboardCharts(filtered);
+}
+
+function resetAllFilters() {
+  document.getElementById('dashCategoryFilter').value = 'ALL';
+  document.getElementById('dashBatteryFilter').value = 'ALL';
+  document.getElementById('dashCountryFilter').value = 'ALL';
+  filterDashboardData();
 }
 
 function renderAllDashboardCharts(data) {
@@ -49,7 +76,7 @@ function renderAllDashboardCharts(data) {
   renderCustomerRatings(data);
 }
 
-// 1. Annual Sales Volume by Top Manufacturers (Bar Chart)
+// 1. Annual Sales Volume by Top Manufacturers
 function renderBrandSales(data) {
   const brandMap = {};
   data.forEach(v => {
@@ -62,20 +89,33 @@ function renderBrandSales(data) {
   createChart('dashBrandSales', 'bar', {
     labels: sorted.map(d => d[0]),
     datasets: [{
-      label: 'Units Sold / Year',
+      label: 'Units Delivered / Year',
       data: sorted.map(d => d[1]),
-      backgroundColor: PALETTE[0],
-      borderRadius: 6
+      backgroundColor: '#2563eb',
+      hoverBackgroundColor: '#1d4ed8',
+      borderRadius: 6,
+      borderSkipped: false
     }]
   }, {
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` Deliveries: ${ctx.raw.toLocaleString()} vehicles`
+        }
+      }
+    },
     scales: {
-      y: { ticks: { callback: v => v >= 1e3 ? (v / 1e3).toLocaleString() + 'k' : v } }
+      x: { grid: { display: false } },
+      y: {
+        grid: { color: '#f1f5f9' },
+        ticks: { callback: v => v >= 1e3 ? (v / 1e3).toLocaleString() + 'k' : v }
+      }
     }
   });
 }
 
-// 2. Category Share (Doughnut Chart)
+// 2. Category Share (Doughnut)
 function renderCategoryShare(data) {
   const catMap = {};
   data.forEach(v => {
@@ -83,21 +123,34 @@ function renderCategoryShare(data) {
   });
   const labels = Object.keys(catMap);
   const values = Object.values(catMap);
+  const colors = labels.map(c => CAT_COLORS[c] || '#64748b');
 
   createChart('dashCategoryDist', 'doughnut', {
     labels: labels,
     datasets: [{
       data: values,
-      backgroundColor: PALETTE.slice(0, labels.length)
+      backgroundColor: colors,
+      borderWidth: 2,
+      borderColor: '#ffffff',
+      hoverOffset: 6
     }]
   }, {
+    cutout: '62%',
     plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+      legend: {
+        position: 'bottom',
+        labels: { boxWidth: 10, padding: 12, font: { size: 11, family: 'Inter' } }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()} units`
+        }
+      }
     }
   });
 }
 
-// 3. Battery Chemistry Mix (Pie Chart)
+// 3. Battery Chemistry Share (Pie)
 function renderBatteryChemistry(data) {
   const batMap = {};
   data.forEach(v => {
@@ -105,52 +158,81 @@ function renderBatteryChemistry(data) {
   });
   const labels = Object.keys(batMap);
   const values = Object.values(batMap);
+  const colors = labels.map(b => BATTERY_COLORS[b] || '#64748b');
 
   createChart('dashBatteryDist', 'pie', {
     labels: labels,
     datasets: [{
       data: values,
-      backgroundColor: ['#2563eb', '#16a34a', '#7c3aed', '#ea580c']
+      backgroundColor: colors,
+      borderWidth: 2,
+      borderColor: '#ffffff',
+      hoverOffset: 6
     }]
   }, {
     plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+      legend: {
+        position: 'bottom',
+        labels: { boxWidth: 10, padding: 12, font: { size: 11, family: 'Inter' } }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.raw} models (${Math.round((ctx.raw / data.length) * 100)}%)`
+        }
+      }
     }
   });
 }
 
-// 4. Price vs Driving Range (Scatter Plot)
+// 4. Price vs Driving Range (Scatter)
 function renderPriceVsRange(data) {
-  const scatterData = data.map(v => ({
-    x: v.Price_USD,
-    y: v.Driving_Range_km,
-    model: `${v.Brand} ${v.Model}`
-  }));
+  const categories = ['Sedan', 'SUV', 'Hatchback', 'Truck'];
+  const datasets = categories.map(cat => {
+    const items = data.filter(v => v.Category.toLowerCase() === cat.toLowerCase());
+    return {
+      label: cat,
+      data: items.map(v => ({
+        x: v.Price_USD,
+        y: v.Driving_Range_km,
+        model: `${v.Brand} ${v.Model}`,
+        battery: v.Battery_Tech
+      })),
+      backgroundColor: CAT_COLORS[cat] || '#2563eb',
+      pointRadius: 5,
+      pointHoverRadius: 7
+    };
+  }).filter(ds => ds.data.length > 0);
 
   createChart('dashPriceRange', 'scatter', {
-    datasets: [{
-      label: 'EV Models',
-      data: scatterData,
-      backgroundColor: '#2563eb',
-      pointRadius: 6,
-      pointHoverRadius: 8
-    }]
+    datasets: datasets
   }, {
     plugins: {
+      legend: {
+        position: 'top',
+        align: 'end',
+        labels: { boxWidth: 10, font: { size: 11 } }
+      },
       tooltip: {
         callbacks: {
-          label: ctx => `${ctx.raw.model}: $${ctx.raw.x.toLocaleString()} | ${ctx.raw.y} km`
+          label: ctx => ` ${ctx.raw.model} (${ctx.raw.battery}): $${ctx.raw.x.toLocaleString()} | ${ctx.raw.y} km range`
         }
       }
     },
     scales: {
-      x: { title: { display: true, text: 'Price (USD)' }, ticks: { callback: v => '$' + (v / 1e3) + 'k' } },
-      y: { title: { display: true, text: 'Driving Range (km)' } }
+      x: {
+        title: { display: true, text: 'Price (USD)', font: { size: 11, weight: '600' } },
+        grid: { color: '#f8fafc' },
+        ticks: { callback: v => '$' + (v / 1e3) + 'k' }
+      },
+      y: {
+        title: { display: true, text: 'Range (km)', font: { size: 11, weight: '600' } },
+        grid: { color: '#f1f5f9' }
+      }
     }
   });
 }
 
-// 5. Global Production Hubs (Horizontal Bar Chart)
+// 5. Manufacturing Output (Horizontal Bar)
 function renderCountryOutput(data) {
   const cMap = {};
   data.forEach(v => {
@@ -161,21 +243,26 @@ function renderCountryOutput(data) {
   createChart('dashCountryOutput', 'bar', {
     labels: sorted.map(d => d[0]),
     datasets: [{
-      label: 'Annual Output',
+      label: 'Deliveries',
       data: sorted.map(d => d[1]),
-      backgroundColor: PALETTE[1],
-      borderRadius: 4
+      backgroundColor: '#0891b2',
+      borderRadius: 4,
+      borderSkipped: false
     }]
   }, {
     indexAxis: 'y',
     plugins: { legend: { display: false } },
     scales: {
-      x: { ticks: { callback: v => v >= 1e3 ? (v / 1e3) + 'k' : v } }
+      x: {
+        grid: { color: '#f8fafc' },
+        ticks: { callback: v => v >= 1e3 ? (v / 1e3) + 'k' : v }
+      },
+      y: { grid: { display: false } }
     }
   });
 }
 
-// 6. Average Driving Range by Category (Bar Chart)
+// 6. Average Driving Range by Category
 function renderRangeBenchmark(data) {
   const sums = {};
   const counts = {};
@@ -192,50 +279,81 @@ function renderRangeBenchmark(data) {
       label: 'Avg Range (km)',
       data: avgs,
       backgroundColor: '#16a34a',
-      borderRadius: 4
+      borderRadius: 4,
+      borderSkipped: false
     }]
   }, {
-    plugins: { legend: { display: false } }
-  });
-}
-
-// 7. Customer Satisfaction & Rating Distribution (Line Chart)
-function renderCustomerRatings(data) {
-  const sortedBySales = [...data].sort((a, b) => b.Annual_Sales - a.Annual_Sales).slice(0, 10);
-
-  createChart('dashCustomerRating', 'line', {
-    labels: sortedBySales.map(v => `${v.Brand} ${v.Model}`),
-    datasets: [{
-      label: 'Customer Rating (1-5 ⭐)',
-      data: sortedBySales.map(v => v.Customer_Rating),
-      borderColor: '#ea580c',
-      backgroundColor: 'rgba(234, 88, 12, 0.1)',
-      fill: true,
-      tension: 0.35,
-      pointRadius: 5
-    }]
-  }, {
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` Average Range: ${ctx.raw} km`
+        }
+      }
+    },
     scales: {
-      y: { min: 3.5, max: 5.0, ticks: { stepSize: 0.5 } }
+      x: { grid: { display: false } },
+      y: {
+        grid: { color: '#f1f5f9' },
+        ticks: { callback: v => v + ' km' }
+      }
     }
   });
 }
 
-// Helper: safe chart creation / reuse
+// 7. Customer Satisfaction & Rating Distribution
+function renderCustomerRatings(data) {
+  const sortedBySales = [...data].sort((a, b) => b.Annual_Sales - a.Annual_Sales).slice(0, 8);
+
+  createChart('dashCustomerRating', 'line', {
+    labels: sortedBySales.map(v => v.Model),
+    datasets: [{
+      label: 'Rating (1-5 ⭐)',
+      data: sortedBySales.map(v => v.Customer_Rating),
+      borderColor: '#ea580c',
+      backgroundColor: 'rgba(234, 88, 12, 0.08)',
+      fill: true,
+      tension: 0.35,
+      borderWidth: 2,
+      pointBackgroundColor: '#ea580c',
+      pointRadius: 4,
+      pointHoverRadius: 6
+    }]
+  }, {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        min: 3.8,
+        max: 5.0,
+        grid: { color: '#f1f5f9' },
+        ticks: { stepSize: 0.2, callback: v => v + ' ★' }
+      }
+    }
+  });
+}
+
+// ── Ultra-Strict Chart Creation to Eliminate Hover Infinite Resize ──
 function createChart(canvasId, type, chartData, options = {}) {
-  const el = document.getElementById(canvasId);
-  if (!el) return;
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
 
   if (chartInstances[canvasId]) {
     chartInstances[canvasId].destroy();
   }
 
-  chartInstances[canvasId] = new Chart(el, {
+  chartInstances[canvasId] = new Chart(canvas, {
     type: type,
     data: chartData,
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      resizeDelay: 150,
+      animation: { duration: 400 },
+      interaction: {
+        mode: 'nearest',
+        intersect: true
+      },
       ...options
     }
   });
@@ -244,17 +362,18 @@ function createChart(canvasId, type, chartData, options = {}) {
 // ── Tableau Public Modal & Embed Handlers ──
 function toggleTableauPublicModal() {
   const modal = document.getElementById('tableauModal');
-  modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+  if (modal) {
+    modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+  }
 }
 
 function saveTableauUrl() {
   const input = document.getElementById('tableauUrlInput');
-  const url = input.value.trim();
+  const url = input ? input.value.trim() : '';
   if (!url) {
-    alert('Please enter a valid Tableau Public URL');
+    alert('Please enter a valid Tableau Public URL (e.g., https://public.tableau.com/views/...)');
     return;
   }
-  localStorage.setItem('tableauDashboardUrl', url);
   renderTableauEmbed(url);
   toggleTableauPublicModal();
 }
@@ -262,12 +381,11 @@ function saveTableauUrl() {
 function renderTableauEmbed(url) {
   const wrapper = document.getElementById('tableauPublicWrapper');
   const slot = document.getElementById('tableauEmbedSlot');
-  // Format embed url if needed
   let embedUrl = url;
-  if (!embedUrl.includes(':embed=yes')) {
+  if (!embedUrl.includes(':embed=yes') && !embedUrl.includes(':embed=true')) {
     embedUrl += (embedUrl.includes('?') ? '&' : '?') + ':showVizHome=no&:embed=true';
   }
-  slot.innerHTML = `<iframe src="${embedUrl}" width="100%" height="700" frameborder="0" style="border-radius: 8px;"></iframe>`;
+  slot.innerHTML = `<iframe src="${embedUrl}" width="100%" height="700" frameborder="0" style="border-radius: 8px; border: 1px solid #e2e8f0;"></iframe>`;
   wrapper.style.display = 'block';
   document.getElementById('nativeDashboardGrid').style.display = 'none';
 }
@@ -275,11 +393,4 @@ function renderTableauEmbed(url) {
 function closeTableauEmbed() {
   document.getElementById('tableauPublicWrapper').style.display = 'none';
   document.getElementById('nativeDashboardGrid').style.display = 'grid';
-}
-
-function checkSavedTableauUrl() {
-  const saved = localStorage.getItem('tableauDashboardUrl');
-  if (saved) {
-    // Keep native dashboard default visible unless specifically toggled
-  }
 }
